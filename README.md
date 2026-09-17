@@ -24,11 +24,10 @@ ProxyTune is an advanced multi-protocol VPN client designed specifically for roo
 
 **Manual:** Download the latest `.ipk` file from the [Releases](https://github.com/sobolevcode/ProxyTune/releases) section and install it via webOS Dev Manager.
 
-💬 Community & Support
-
-    Official website: sobolevcode.github.io
-    Telegram channel: @sobolevcode
-    Discussion chat: @sobolevcodechat
+💬 **Community & Support**
+*   Official website: [sobolevcode.github.io](https://sobolevcode.github.io)
+*   Telegram channel: [@sobolevcode](https://t.me/sobolevcode)
+*   Discussion chat: [@sobolevcodechat](https://t.me/sobolevcodechat)
 
 
 ---
@@ -59,9 +58,8 @@ ProxyTune — это продвинутый мультипротокольный
 
 **Вручную:** Скачайте актуальный `.ipk` файл в разделе [Releases](https://github.com/sobolevcode/ProxyTune/releases) и установите через webOS Dev Manager.
 
-💬 Сообщество и поддержка
-
-    Официальный сайт: sobolevcode.github.io
-    Telegram-канал: @sobolevcode
-    Чат для обсуждений: @sobolevcodechat
+💬 **Сообщество и поддержка**
+*   Официальный сайт: [sobolevcode.github.io](https://sobolevcode.github.io)
+*   Telegram-канал: [@sobolevcode](https://t.me/sobolevcode)
+*   Чат для обсуждений: [@sobolevcodechat](https://t.me/sobolevcodechat)
 
