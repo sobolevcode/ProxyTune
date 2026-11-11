@@ -1,3 +1,6 @@
+[🇷🇺 Русский](README.md) | [🇬🇧 English](README_EN.md)
+***
+
 # ProxyTune for webOS (English)
 
 ProxyTune is an advanced multi-protocol VPN client designed specifically for rooted LG smart TVs running webOS. It provides seamless access to global content and bypasses network restrictions directly on your TV.
