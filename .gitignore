@@ -1,0 +1,14 @@
+# Собранные пакеты webOS
+*.ipk
+*.tar.gz
+
+# Локальные данные сервиса
+save_data/
+*.conf
+*.log
+
+# Системный и редакторский мусор
+.DS_Store
+Thumbs.db
+.vscode/
+node_modules/
