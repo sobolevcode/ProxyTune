@@ -1,0 +1,11 @@
+{
+  "id": "com.proxytune.service",
+  "description": "ProxyTune Xray Core Service",
+  "services": [
+    {
+      "name": "com.proxytune.service",
+      "description": "ProxyTune Xray Service",
+      "keepAlive": true
+    }
+  ]
+}

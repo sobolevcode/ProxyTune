@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ProxyTune</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+
+<div id="app">
+
+    <div class="header">
+        <div class="logo">
+            Proxy<span>Tune</span>
+            <span class="version">v2.4.0</span>
+            <span class="feature-badge">Поддержка Amnezia WG, подписок и JSON</span>
+        </div>
+
+        <div class="header-actions">
+            <!-- Кнопка диагностики -->
+            <button id="btnDiagTop" class="diag-btn-top" tabindex="0" onclick="openDiagnosticsModal(event)" onkeydown="if(event.keyCode === 13 || event.key === 'Enter') { this.click(); event.preventDefault(); }">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+                Диагностика сети
+            </button>
+
+            <!-- 🔥 НОВЫЙ БЛОК: ТУМБЛЕР АВТОЗАПУСКА В ХЕДЕРЕ 🔥 -->
+            <div class="autostart-header-block">
+                <span class="autostart-label">АВТОЗАПУСК</span>
+                <label class="switch">
+                    <input type="checkbox" id="autostartToggle" tabindex="0">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <!-- Статус соединения -->
+            <div id="connectionStatus" class="status-badge">
+                Отключено
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <div class="left">
+
+            <div class="card about">
+                <h3>О приложении</h3>
+                <p>
+                     <b>ProxyTune</b> — мультипротокольный клиент для webOS. <br>
+                     Поддерживает: <b>AMNEZIA WG (AWG), VLESS, Trojan, Shadowsocks, SOCKS5</b>, а также работу с подписками и <b>.json</b> конфигурациями.
+                </p>
+    
+                <p style="margin-top: 12px; color: #3dd9b8; font-weight: 500; font-size: 15px;">
+                     📱 Для управления серверами отсканируйте QR-код камерой телефона или введите IP-адрес в адресную строку браузера.
+                </p>
+            </div>
+
+            <div class="network-info-card">
+                <div class="network-details">
+                    <div class="info-group">
+                        <span class="info-label">IP АДРЕС</span>
+                        <span id="ip-address" class="info-value">Определение...</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">СТАТУС</span>
+                        <div class="status-wrapper">
+                            <div id="status-dot" class="status-dot dot-red"></div>
+                            <span id="status-text" class="status-text text-red">Остановлен</span>
+                        </div>
+                    </div>
+                    <div class="info-group" style="margin-right: 0;">
+                        <span class="info-label">ССЫЛКА</span>
+                        <span id="linkStatus" class="info-value off">Нет</span>
+                    </div>
+                </div>
+                
+                <div class="qr-wrapper" id="qr-container" style="display: none;">
+                    <span class="info-label" style="text-align: center; margin-bottom: 8px; display: block;">ТЕЛЕФОН</span>
+                    <div id="qrcode-box" style="background: #ffffff; padding: 6px; border-radius: 8px;"></div>
+                </div>
+            </div>
+            
+            <div class="card promo promo-unified" id="dynamicPromoUnified" style="display: none;">
+                
+                <!-- Секция 1: Информация -->
+                <div id="promoSection1" style="display: none;">
+                    <div class="promo-label" id="promoLabel">ИНФОРМАЦИЯ</div>
+                    <div class="promo-text" id="promoText"></div>
+                    <img id="promoImage" src="" class="promo-image" alt="Promo" style="display: none;">
+                </div>
+
+                <!-- Секция 2: Донат -->
+                <div id="promoSection2" class="promo-section-gap" style="display: none;">
+                    <div class="promo-label" id="promoLabel2">ДОНАТ И СОЦСЕТИ</div>
+                    <div class="promo-text" id="promoText2"></div>
+                    <div class="promo2-img-container">
+                        <img id="promoImage2" src="" class="promo-image promo2-img" alt="" style="display: none;">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="right">
+
+            <div id="vpnBtnWrapper">
+                <button id="btnToggle" class="vpn-button" tabindex="0">
+                    <svg viewBox="0 0 1024 1024" class="power-svg">
+                        <path d="M664.9 330.1c12.8-13.3 44.2 13.3 44.2 13.3 34.3 44.2 54.8 100.3 54.8 161.2 0 142.9-112.6 258.7-251.6 258.7S260.7 647.5 260.7 504.6c0-61.9 21.1-118.7 56.3-163.2 0 0 27.5-24.4 41.5-11.4s10.4 35.9 2.3 46.1c-28.5 36-44.3 80.9-44.3 128.5 0 112.3 88 202.8 195.7 202.8S707.9 617 707.9 504.6c0-46.9-15.4-91.2-43.1-127-7.9-10.2-12.8-34.2 0.1-47.5z" fill="currentColor" />
+                        <path d="M484.3 288.1c0-15.4 12.4-27.9 28-27.9 15.4 0 28 12.5 28 27.9v195.8c0 15.4-12.4 27.9-28 27.9-15.4 0-28-12.5-28-27.9V288.1z" fill="currentColor" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="button-caption"></div>
+
+            <div class="server-card">
+                <div class="server-header">
+                    Сервер-лист
+                </div>
+                <div id="firstServerItem" class="server-item active" tabindex="0">Ожидание ссылки...</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <div class="server-item" tabindex="0">Пусто</div>
+                <button class="clear-history" tabindex="0">Очистить всю историю</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="message" class="footer">
+        Telegram: <span class="footer-link">@sobolevcode</span>
+        <span style="opacity: 0.35; margin: 0 12px;">•</span>
+        GitHub: <span class="footer-link">sobolevcode/ProxyTune</span>
+    </div>
+
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ПЕРВОГО ЗАПУСКА -->
+<div id="tvWelcomeModal" class="modal-overlay">
+    <div class="card welcome-card">
+        
+        <div class="welcome-title-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <h2>Системные требования и настройки</h2>
+        </div>
+        
+        <p class="welcome-text">
+            Добро пожаловать в <b>ProxyTune</b>! Для корректной работы приложения на вашем телевизоре обязательно требуются:
+        </p>
+
+        <ul class="welcome-list">
+            <li>Наличие <b>Root-прав</b> на телевизоре.</li>
+            <li>Версия операционной системы <b>webOS 4.0</b> или выше.</li>
+            <li>Так же рекомендую в настройках сети телевизора LG выключите <b>IPv6</b> и настройте сеть вручную — измените <b>Сервер DNS на 1.1.1.1</b></li>
+        </ul>
+
+        <div class="compat-box">
+            <div class="compat-label">ПРОВЕРКА СОВМЕСТИМОСТИ</div>
+            <div class="compat-url">https://cani.rootmy.tv/</div>
+            <div class="compat-hint">(Откройте этот адрес в браузере)</div>
+        </div>
+
+        <button id="welcomeBtn" class="welcome-btn" tabindex="0"
+                onclick="closeTvWelcomeModal()" 
+                onkeydown="if(event.keyCode === 13 || event.key === 'Enter') { event.preventDefault(); closeTvWelcomeModal(); }">
+            Я понял, продолжить (60)
+        </button>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- 🔥 ОКНО ДИАГНОСТИКИ 🔥 -->
+<div id="diagModal" class="modal-overlay">
+    <div id="diagBoxContainer" class="diag-box-container" tabindex="0">
+        <div class="diag-header">
+            <div class="diag-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+                Системный журнал (Нажмите НАЗАД для закрытия)
+            </div>
+        </div>
+
+        <textarea id="diagLogTextModal" class="diag-textarea" readonly tabindex="-1" aria-hidden="true"></textarea>
+    </div>
+</div>
+
+<script src="webOSTV.js"></script>
+<script src="js/qrcode.min.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+let welcomeTimer = null;
+window.isDiagOpen = false;
+window.isActionBlocked = false; 
+window.actionBlockTimer = null; 
+let isHandlingBack = false;
+
+history.pushState(null, null, window.location.href);
+
+window.addEventListener('popstate', function(event) {
+    event.stopImmediatePropagation();
+    history.pushState(null, null, window.location.href);
+    handleSystemBackButton();
+}, true);
+
+function handleSystemBackButton() {
+    if (isHandlingBack) return; 
+    isHandlingBack = true;
+    setTimeout(() => { isHandlingBack = false; }, 500); 
+
+    if (window.isDiagOpen) {
+        closeDiagnosticsModal();
+    } else if (document.getElementById('tvWelcomeModal').style.display === 'flex') {
+        closeTvWelcomeModal();
+    } else {
+        window.close(); 
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    var keyCode = event.keyCode;
+    var key = event.key || event.code;
+    var activeElement = document.activeElement;
+    
+    if (keyCode === 461 || keyCode === 27 || keyCode === 8 || key === "Escape" || key === "Backspace") {
+        event.preventDefault(); 
+        event.stopPropagation();
+        event.stopImmediatePropagation(); 
+        handleSystemBackButton();
+        return;
+    }
+
+    var welcomeModal = document.getElementById('tvWelcomeModal');
+    if (welcomeModal && welcomeModal.style.display === 'flex') {
+        if (keyCode >= 37 && keyCode <= 40) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var welcomeBtn = document.getElementById('welcomeBtn');
+            if (welcomeBtn && activeElement !== welcomeBtn) welcomeBtn.focus();
+            return;
+        }
+    }
+
+    if (window.isDiagOpen) {
+        if (keyCode === 13 || key === 'Enter') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+        return; 
+    }
+
+    if (!activeElement) return;
+
+    if (keyCode === 13 || key === 'Enter') {
+        if (activeElement.id === 'btnToggle') {
+            if (window.isActionBlocked) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return; 
+            } else {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                activeElement.click(); 
+                return;
+            }
+        }
+        
+        if (activeElement.id === 'btnDiagTop') {
+            event.preventDefault();
+            event.stopImmediatePropagation(); 
+            openDiagnosticsModal();
+            return;
+        }
+    }
+
+    // Навигация вверх
+    if (keyCode === 38 || key === 'ArrowUp') {
+        if (activeElement.id === 'firstServerItem') { 
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var vpnBtn = document.getElementById('btnToggle');
+            if (vpnBtn) vpnBtn.focus();
+            return;
+        }
+        
+        if (activeElement.id === 'btnToggle') { 
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var autostartBtn = document.getElementById('autostartToggle');
+            var diagBtn = document.getElementById('btnDiagTop');
+            
+            // 🔥 УМНЫЙ ПЕРЕПРЫГ: Если тумблер активен — идем на него, иначе сразу на Диагностику
+            if (autostartBtn && !autostartBtn.disabled) {
+                autostartBtn.focus();
+            } else if (diagBtn) {
+                diagBtn.focus();
+            }
+            return;
+        }
+    }
+    
+    // Навигация вниз
+    if (keyCode === 40 || key === 'ArrowDown') {
+        if (activeElement.id === 'btnDiagTop' || activeElement.id === 'autostartToggle') { 
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var vpnBtn = document.getElementById('btnToggle');
+            if (vpnBtn) vpnBtn.focus();
+            return;
+        }
+
+        if (activeElement.id === 'btnToggle') { 
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var firstServer = document.getElementById('firstServerItem');
+            if (firstServer) firstServer.focus();
+            return;
+        }
+    }
+    
+    // Навигация влево-вправо в хедере
+    if (keyCode === 37 || key === 'ArrowLeft') {
+        if (activeElement.id === 'autostartToggle') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var diagBtn = document.getElementById('btnDiagTop');
+            if (diagBtn) diagBtn.focus();
+            return;
+        }
+    }
+    
+    if (keyCode === 39 || key === 'ArrowRight') {
+        if (activeElement.id === 'btnDiagTop') {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var autostartBtn = document.getElementById('autostartToggle');
+            // 🔥 Переходим вправо на тумблер только если он доступен
+            if (autostartBtn && !autostartBtn.disabled) {
+                autostartBtn.focus();
+            }
+            return;
+        }
+    }
+    
+}, true); 
+
+function closeTvWelcomeModal() {
+    if (welcomeTimer) clearInterval(welcomeTimer);
+    localStorage.setItem('proxytune_xray_welcome_seen', 'true');
+    const modal = document.getElementById('tvWelcomeModal');
+    if (modal) modal.style.display = 'none';
+    const btnToggle = document.getElementById('btnToggle');
+    if (btnToggle) btnToggle.focus();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem('proxytune_xray_welcome_seen')) {
+        const modal = document.getElementById('tvWelcomeModal');
+        modal.style.display = 'flex';
+        const welcomeBtn = document.getElementById('welcomeBtn');
+        if (welcomeBtn) {
+            welcomeBtn.focus();
+            
+            modal.onclick = function(e) {
+                if (document.activeElement !== welcomeBtn) welcomeBtn.focus();
+            };
+            
+            let timeLeft = 60;
+            welcomeTimer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    welcomeBtn.innerHTML = `Я понял, продолжить (${timeLeft})`;
+                } else {
+                    clearInterval(welcomeTimer);
+                    closeTvWelcomeModal();
+                }
+            }, 1000);
+        }
+    }
+    fetchRemoteConfig();
+});
+
+async function fetchRemoteConfig() {
+    const primaryUrl = 'https://raw.githubusercontent.com/sobolevcode/proxytune-promo/refs/heads/main/promo.json';
+    const mirrorUrl = 'https://gitverse.ru/api/repos/SobolevCode/proxytune-promo/raw/branch/master/promo.json';
+    let config = null;
+
+    try {
+        let res = await fetch(primaryUrl + '?t=' + new Date().getTime());
+        if (!res.ok) throw new Error('GitHub недоступен');
+        config = await res.json();
+    } catch (err) {
+        console.log('GitHub не отвечает, переключаемся на Gitverse зеркало...');
+        try {
+            let resMirror = await fetch(mirrorUrl + '?t=' + new Date().getTime());
+            if (!resMirror.ok) throw new Error('Gitverse недоступен');
+            config = await resMirror.json();
+        } catch (mirrorErr) {
+            console.log('Оба сервера недоступны. Оставляем блоки скрытыми.');
+            return; 
+        }
+    }
+
+    if (!config) return;
+
+    const unifiedPromo = document.getElementById('dynamicPromoUnified');
+    const sec1 = document.getElementById('promoSection1');
+    const sec2 = document.getElementById('promoSection2');
+    let showAny = false;
+
+    if (sec1 && config.show_promo) {
+        showAny = true;
+        sec1.style.display = 'block';
+        if (config.promo_label) document.getElementById('promoLabel').innerText = config.promo_label;
+        if (config.promo_text) document.getElementById('promoText').innerHTML = config.promo_text; 
+        const promoImg = document.getElementById('promoImage');
+        if (config.promo_image) {
+            promoImg.src = config.promo_image;
+            promoImg.style.display = 'block';
+        } else {
+            promoImg.style.display = 'none';
+        }
+    } else if (sec1) {
+        sec1.style.display = 'none';
+    }
+
+    if (sec2 && config.show_promo2) {
+        showAny = true;
+        sec2.style.display = 'block';
+        if (config.promo2_label) document.getElementById('promoLabel2').innerText = config.promo2_label;
+        if (config.promo2_text) document.getElementById('promoText2').innerHTML = config.promo2_text; 
+        const promoImg2 = document.getElementById('promoImage2');
+        if (config.promo2_image) {
+            promoImg2.src = config.promo2_image;
+            promoImg2.style.display = 'block';
+        } else {
+            promoImg2.style.display = 'none';
+        }
+    } else if (sec2) {
+        sec2.style.display = 'none';
+    }
+
+    if (unifiedPromo) {
+        unifiedPromo.style.display = showAny ? 'block' : 'none';
+    }
+}
+
+function openDiagnosticsModal(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    window.isDiagOpen = true;
+    
+    if (window.actionBlockTimer) clearTimeout(window.actionBlockTimer);
+    window.isActionBlocked = false; 
+
+    var modal = document.getElementById('diagModal');
+    var logBox = document.getElementById('diagLogTextModal');
+    var container = document.getElementById('diagBoxContainer');
+
+    modal.style.display = 'flex'; 
+    logBox.value = 'Загрузка... Собираю логи из системы.\nПожалуйста, подождите 5-10 секунд...';
+
+    fetch('http://127.0.0.1:8888/run-diagnostics')
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                logBox.value = data.log;
+            } else {
+                logBox.value = 'Ошибка сервера при сборе логов.';
+            }
+        })
+        .catch(err => {
+            logBox.value = 'Ошибка сети при обращении к серверу: ' + err;
+        });
+        
+    setTimeout(() => {
+        if (container) container.focus();
+    }, 50);
+
+    window.removeEventListener('keydown', terminalScrollListener);
+    window.addEventListener('keydown', terminalScrollListener);
+    
+    modal.onclick = function() {
+        if (container && document.activeElement !== container) {
+            container.focus();
+        }
+    };
+}
+
+function closeDiagnosticsModal() {
+    window.isDiagOpen = false;
+    window.isActionBlocked = true; 
+    
+    var modal = document.getElementById('diagModal');
+    var vpnBtn = document.getElementById('btnToggle');
+    
+    if(modal) modal.style.display = 'none';
+    window.removeEventListener('keydown', terminalScrollListener);
+    
+    if (document.activeElement) document.activeElement.blur(); 
+    
+    setTimeout(() => {
+        if (vpnBtn) vpnBtn.focus();
+    }, 50);
+
+    if (window.actionBlockTimer) clearTimeout(window.actionBlockTimer);
+    window.actionBlockTimer = setTimeout(() => {
+        window.isActionBlocked = false;
+    }, 800);
+}
+
+function terminalScrollListener(event) {
+    if (!window.isDiagOpen) return;
+    var logBox = document.getElementById('diagLogTextModal');
+
+    if (event.keyCode === 38 || event.key === 'ArrowUp') {
+        event.preventDefault(); 
+        event.stopPropagation();
+        if(logBox) logBox.scrollTop -= 50; 
+    } else if (event.keyCode === 40 || event.key === 'ArrowDown') {
+        event.preventDefault(); 
+        event.stopPropagation();
+        if(logBox) logBox.scrollTop += 50; 
+    }
+}
+</script>
+
+</body>
+</html>

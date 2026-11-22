@@ -1,0 +1,23 @@
+{
+  "id": "com.proxytune",
+  "version": "2.4.0",
+  "vendor": "SobolevCode",
+  "type": "web",
+  "main": "index.html",
+  "title": "ProxyTune",
+  "appDescription": "Advanced VPN client based on Xray core",
+  "icon": "icon.png",
+  "uiRevision": "2",
+  "resolution": "1920x1080",
+  "bgColor": "#0f1115",
+  "transparent": false,
+  "requiredMemory": 64,
+  "handlesAppClose": false,
+  "allowNative": true,
+  "requiredPermissions": [
+    "application.management"
+  ],
+  "services": [
+    "com.proxytune.service"
+  ]
+}

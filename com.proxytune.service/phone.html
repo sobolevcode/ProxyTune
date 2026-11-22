@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ProxyTune</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="css/phone.css">
+</head>
+<body>
+
+<div class="phone">
+    <div class="header" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-bottom: 5px;">
+        
+        <!-- 🔥 ВЕРХНИЙ ЭТАЖ: Парящие прозрачные иконки 🔥 -->
+        <div style="display: flex; justify-content: flex-end; gap: 16px;">
+            <button id="langToggle" style="background: transparent; border: none; font-size: 13px; font-weight: 800; color: #94a3b8; cursor: pointer; padding: 4px; line-height: 1; transition: color 0.2s;">EN</button>
+            <button id="themeToggle" style="background: transparent; border: none; font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; transition: opacity 0.2s;">🌙</button>
+        </div>
+        
+        <!-- 🔥 НИЖНИЙ ЭТАЖ: Логотип и Статус ТВ 🔥 -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="logo" style="line-height: 0.9;">Proxy<span>Tune</span></div>
+                <div style="font-size: 10px; color: #3dd9b8; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; margin-left: 2px;">AWG support</div>
+            </div>
+            
+            <div class="tv-status" id="tvStatus" style="margin: 0;">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.24l-3.26 3.26"></path></svg>
+                <span data-i18n="loading">Загрузка...</span>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- 🔥 КНОПКА ДОНАТА 🔥 -->
+    <a href="#" id="dynamicActionBtn" class="top-button" target="_blank" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; margin-bottom: 12px;">
+        <span id="btnMainText" data-i18n="support_project">❤️ Поддержать проект</span>
+        <span id="btnSubText" style="font-size: 11px; opacity: 0.75; font-weight: normal; margin-top: 4px;" data-i18n="cloudtips">CloudTips от Т-Банка</span>
+    </a>
+
+    <!-- 🔥 ПРОМО-КНОПКА 🔥 -->
+    <a href="#" id="promoActionBtn" class="top-button" target="_blank" style="display: none; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; margin-bottom: 20px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #121926; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
+        <span id="promoMainText" style="font-weight: 700;" data-i18n="promo_title">🔥 Промо текст?</span>
+        <span id="promoSubText" style="font-size: 11px; opacity: 0.85; font-weight: 600; margin-top: 4px;"></span>
+    </a>
+
+    <div class="main-card">
+        <div class="power-wrapper">
+            <div class="power-btn" id="connectBtn">
+                <svg viewBox="0 0 1024 1024" class="power-svg">
+                    <path d="M664.9 330.1c12.8-13.3 44.2 13.3 44.2 13.3 34.3 44.2 54.8 100.3 54.8 161.2 0 142.9-112.6 258.7-251.6 258.7S260.7 647.5 260.7 504.6c0-61.9 21.1-118.7 56.3-163.2 0 0 27.5-24.4 41.5-11.4s10.4 35.9 2.3 46.1c-28.5 36-44.3 80.9-44.3 128.5 0 112.3 88 202.8 195.7 202.8S707.9 617 707.9 504.6c0-46.9-15.4-91.2-43.1-127-7.9-10.2-12.8-34.2 0.1-47.5z" fill="currentColor" />
+                    <path d="M484.3 288.1c0-15.4 12.4-27.9 28-27.9 15.4 0 28 12.5 28 27.9v195.8c0 15.4-12.4 27.9-28 27.9-15.4 0-28-12.5-28-27.9V288.1z" fill="currentColor" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="connect-text" id="statusText" data-i18n="loading">Загрузка...</div>
+
+        <div class="link-box" style="position: relative;">
+            <textarea id="vlessInput" data-i18n="input_placeholder" placeholder="Вставьте ссылку на подписку или конфигурацию (vless://, trojan://, AWG, JSON)..." spellcheck="false" style="padding-right: 40px; min-height: 80px; height: 80px; max-height: 250px; resize: none; overflow-y: auto; transition: height 0.2s ease;"></textarea>
+            
+            <button id="clearInputBtn" style="display: none; position: absolute; top: 12px; right: 10px; background: rgba(255,255,255,0.1); border: none; color: #cbd5e1; cursor: pointer; padding: 6px; border-radius: 50%; width: 28px; height: 28px; align-items: center; justify-content: center; z-index: 10;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="hint-text" style="font-size: 13px; line-height: 1.6; color: #94a3b8; text-align: left; margin-top: 10px;">
+            <div style="margin-bottom: 4px;" data-i18n="hint_awg">
+                <b>AmneziaWG:</b> копируйте конфиг целиком, начиная с <code style="background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; color: #3dd9b8; font-family: monospace;">[Interface]</code> и до самого конца
+            </div>
+            <div data-i18n="hint_socks"><b>SOCKS5:</b> socks5://login:pass@ip:port</div>
+            <div style="margin-top: 4px;" data-i18n="hint_json">Также поддерживаются подписки и конфиги <b>.json</b></div>
+        </div>
+
+        <!-- 🔥 СКРЫТЫЙ ИНПУТ ДЛЯ ФАЙЛОВ 🔥 -->
+        <input type="file" id="fileUploader" accept=".conf,.txt,.json" style="display: none;">
+        
+        <!-- 🔥 КНОПКА ИМПОРТА 🔥 -->
+        <button class="tv-btn" id="importFileBtn">
+            <span data-i18n="import_awg">Импорт конфигурации AWG</span>
+        </button>
+
+        <button class="tv-btn" id="sendBtn">
+            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span data-i18n="send_to_tv">Отправить на ТВ</span>
+        </button>
+
+        <button class="tv-btn" id="reopenSubBtn" style="display: none; margin-top: 10px; background-color: transparent; border: 1px solid #3dd9b8; color: #3dd9b8;">
+            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            <span data-i18n="select_from_sub">Выбрать сервер из подписки</span>
+        </button>
+    </div>
+
+    <div class="server-card">
+        <div class="server-header" style="display: flex; justify-content: space-between; align-items: baseline;">
+            <h2 data-i18n="server_list">Сервер-лист</h2>
+            <span id="slotCounter" style="font-size: 13px; font-weight: 600; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;">0/8</span>
+        </div>
+        
+        <div id="serverListContainer"></div>
+        
+        <div class="history-info-text" data-i18n="history_info">
+            История хранит до 8 подключений. Золотая звездочка слева защищает сервер от авто-удаления.
+        </div>
+        <button class="clear" id="clearBtn">
+            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span data-i18n="clear_history">Очистить всю историю</span>
+        </button>
+    </div>
+
+    <div class="diagnostic-card">
+        <button class="diag-btn" id="diagStartBtn" onclick="startDiagnostics()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            <span data-i18n="diag_btn">Диагностика сети (Логи)</span>
+        </button>
+        
+        <div id="diagResultContainer" style="display: none; margin-top: 15px;">
+            <textarea id="diagLogText" readonly></textarea>
+            <button class="copy-diag-btn" id="diagCopyBtn" onclick="copyDiagnostics()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span data-i18n="copy_result">Скопировать результат</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="footer-logo" style="line-height: 0.9;">Proxy<span>Tune</span></div>
+            <div style="font-size: 9px; color: #3dd9b8; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px;">AWG support</div>
+        </div>
+        <div class="author" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 12px;">
+            <a href="https://t.me/sobolevcode" target="_blank" rel="noopener" style="color: #3dd9b8; text-decoration: none; font-weight: 500;">
+                Telegram: @sobolevcode
+            </a>
+            <a href="https://github.com/sobolevcode/ProxyTune" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; font-weight: 500; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+                <span>GitHub • GPL-3.0</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно серверов -->
+<div id="subModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header-modern">
+            <h3 class="modal-title-wrap">
+                <span data-i18n="select_server">Выберите сервер</span>
+                <span id="subServerCount" class="server-counter-badge">0</span>
+            </h3>
+            <div class="modal-actions">
+                <button id="refreshSubBtn" class="icon-btn" title="Обновить подписку">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                        <path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                    </svg>
+                </button>
+                <button id="closeModalBtn" class="icon-btn close-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 28px; height: 28px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div style="font-size: 13px; color: #cbd5e1; background: rgba(61, 217, 184, 0.05); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left; border: 1px solid rgba(61, 217, 184, 0.2); line-height: 1.5;">
+                <div style="margin-bottom: 6px;" data-i18n="server_not_working">
+                    <b style="color: #3dd9b8;">💡 Сервер не работает?</b><br>
+                    Нажми на кнопку «Обновить» сверху — IP-адреса обновятся также в слотах на экране ТВ.
+                </div>
+                <div style="font-size: 12px; color: #94a3b8;" data-i18n="ping_hint">
+                    <i>*Чтобы проверить пинг, сначала отключите текущее VPN-подключение.</i>
+                </div>
+            </div>
+            <ul id="serverList" class="server-list-modal" style="list-style: none; padding: 0; margin: 0; max-height: 280px; overflow-y: auto;"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно защиты провайдера -->
+<div id="smartFallbackModal" class="modal-overlay" style="display: none; z-index: 9999;">
+    <div class="modal-content" style="max-width: 90%; text-align: left; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="border-bottom: none; justify-content: space-between; padding-bottom: 0;">
+            <h3 style="color: #f59e0b; display: flex; align-items: center; gap: 8px; margin: 0; font-size: 18px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 22px; height: 22px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span data-i18n="provider_protection">Защита провайдера</span>
+            </h3>
+            <button onclick="document.getElementById('smartFallbackModal').style.display='none'" style="background: transparent; border: none; color: #94a3b8; padding: 0; cursor: pointer;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding-top: 15px;">
+            <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px; line-height: 1.5;" data-i18n="fallback_desc">Провайдер блокирует прямое подключение, либо используется неподдерживаемый формат конфигурации или ссылки.</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <b style="color: #3dd9b8; font-size: 14px;" data-i18n="variant1">Вариант 1 (Для ссылок с файлом .json):</b>
+                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 8px 0;" data-i18n="v1_desc">Откройте ссылку в браузере, скопируйте код полностью и вставьте сюда.</p>
+                <a id="smartFallbackLink" href="#" target="_blank" class="fallback-link" style="font-size: 13px; padding: 8px;" data-i18n="open_in_browser">Открыть ссылку в браузере</a>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <b style="color: #3dd9b8; font-size: 14px;" data-i18n="variant2">Вариант 2 (Для провайдеров с авторизацией):</b>
+                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 10px 0;" data-i18n="v2_desc">Зайдите в личный кабинет VPN или в приложение, скопируйте готовый JSON-конфиг оттуда и вставьте сюда.</p>
+                <img src="help.png" loading="lazy" alt="Инструкция" style="width: 100%; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); display: block; margin: 0 auto;">
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                <b style="color: #3dd9b8; font-size: 14px;" data-i18n="variant3">Вариант 3 (Самый надежный):</b>
+                <p style="font-size: 13px; color: #94a3b8; margin: 5px 0 10px 0;" data-i18n="v3_desc">Если у вас есть подписка от Happ, которая не работает в ProxyTune, используйте <b>Happwner</b> (на Android), чтобы превратить её в обычные VLESS-ссылки.</p>
+                <a href="https://t.me/sobolevcodechat/330/381" target="_blank" style="display: block; background: #f59e0b; color: #121926; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px;" data-i18n="more_in_tg">Подробности в Telegram</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== СЛОВАРЬ ПЕРЕВОДОВ ====================
+const i18nDict = {
+    ru: {
+        loading: "Загрузка...",
+        support_project: "❤️ Поддержать проект",
+        cloudtips: "CloudTips от Т-Банка",
+        promo_title: "🔥 Где взять быстрый сервер?",
+        input_placeholder: "Вставьте ссылку на подписку или конфигурацию (vless://, trojan://, AWG, JSON)...",
+        hint_awg: "<b>AmneziaWG:</b> копируйте конфиг целиком, начиная с <code style='background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; color: #3dd9b8; font-family: monospace;'>[Interface]</code> и до самого конца",
+        hint_socks: "<b>SOCKS5:</b> socks5://login:pass@ip:port",
+        hint_json: "Также поддерживаются подписки и конфиги <b>.json</b>",
+        import_awg: "Импорт конфигурации AWG",
+        send_to_tv: "Отправить на ТВ",
+        select_from_sub: "Выбрать сервер из подписки",
+        server_list: "Сервер-лист",
+        history_info: "История хранит до 8 подключений. Золотая звездочка слева защищает сервер от авто-удаления.",
+        clear_history: "Очистить всю историю",
+        diag_btn: "Диагностика сети (Логи)",
+        copy_result: "Скопировать результат",
+        select_server: "Выберите сервер",
+        server_not_working: "<b style='color: #3dd9b8;'>💡 Сервер не работает?</b><br>Нажми на кнопку «Обновить» сверху — IP-адреса обновятся также в слотах на экране ТВ.",
+        ping_hint: "<i>*Чтобы проверить пинг, сначала отключите текущее VPN-подключение.</i>",
+        provider_protection: "Защита провайдера",
+        fallback_desc: "Провайдер блокирует прямое подключение, либо используется неподдерживаемый формат конфигурации или ссылки.",
+        variant1: "Вариант 1 (Для ссылок с файлом .json):",
+        v1_desc: "Откройте ссылку в браузере, скопируйте код полностью и вставьте сюда.",
+        open_in_browser: "Открыть ссылку в браузере",
+        variant2: "Вариант 2 (Для провайдеров с авторизацией):",
+        v2_desc: "Зайдите в личный кабинет VPN или в приложение, скопируйте готовый JSON-конфиг оттуда и вставьте сюда.",
+        variant3: "Вариант 3 (Самый надежный):",
+        v3_desc: "Если у вас есть подписка от Happ, которая не работает в ProxyTune, используйте <b>Happwner</b> (на Android), чтобы превратить её в обычные VLESS-ссылки.",
+        more_in_tg: "Подробности в Telegram",
+        
+        err_no_slots: "Нет свободных слотов! Открепите серверы из избранного или очистите историю.",
+        err_tv_conn: "Ошибка связи с телевизором!",
+        tv_connected: "ТВ в сети",
+        no_tv_conn: "Нет связи с ТВ",
+        unknown_server: "Неизвестный сервер",
+        empty: "Пусто",
+        waiting_config: "Ожидание конфигурации...",
+        btn_stop: "Остановка...",
+        btn_start: "Запуск...",
+        add_config_first: "Сначала добавьте конфигурацию!",
+        server_chosen: "Сервер выбран! Нажми еще раз для запуска.",
+        server_chosen_stop: "Сервер выбран. VPN остановлен.",
+        del_active_err: "Отключите VPN перед удалением активного сервера!",
+        del_confirm: "Удалить этот сервер?",
+        awg_err_incomplete: "⚠️ Ошибка: Конфиг скопирован не полностью!",
+        awg_err_address: "⚠️ Ошибка: В конфиге отсутствует параметр 'Address'!",
+        awg_added: "AmneziaWG добавлен! Нажми еще раз для запуска.",
+        awg_added_stop: "AmneziaWG добавлен. VPN остановлен.",
+        insert_config: "Вставьте конфигурацию или ссылку!",
+        btn_loading: "Загрузка...",
+        btn_processing: "Обработка...",
+        err_parsing: "Ошибка: ",
+        err_unknown: "Неизвестная ошибка парсинга",
+        sub_actual: "Подписка актуальна (изменений нет)",
+        sub_updated: "Подписка успешно обновлена!",
+        sub_update_err: "Ошибка обновления: ",
+        server_not_found: "Серверы не найдены",
+        disconnect_first: "Сначала отключите VPN!",
+        clear_confirm: "Очистить историю? (Избранные сервера не удалятся)",
+        diag_wait: "Загрузка... Подождите около 5-10 секунд.",
+        diag_err_server: "Ошибка сервера при сборе логов.",
+        diag_err_net: "Ошибка сети: ",
+        copied: "Скопировано!",
+        copy_err: "Не удалось скопировать."
+    },
+    en: {
+        loading: "Loading...",
+        support_project: "❤️ Support the project",
+        cloudtips: "CloudTips by T-Bank",
+        promo_title: "🔥 Where to get a fast server?",
+        input_placeholder: "Paste subscription link or config (vless://, trojan://, AWG, JSON)...",
+        hint_awg: "<b>AmneziaWG:</b> copy the entire config, starting from <code style='background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; color: #3dd9b8; font-family: monospace;'>[Interface]</code> to the very end",
+        hint_socks: "<b>SOCKS5:</b> socks5://login:pass@ip:port",
+        hint_json: "Subscriptions and <b>.json</b> configs are also supported",
+        import_awg: "Import AWG config",
+        send_to_tv: "Send to TV",
+        select_from_sub: "Select server from sub",
+        server_list: "Server List",
+        history_info: "History stores up to 8 connections. A gold star protects the server from auto-deletion.",
+        clear_history: "Clear all history",
+        diag_btn: "Network Diagnostics (Logs)",
+        copy_result: "Copy result",
+        select_server: "Select server",
+        server_not_working: "<b style='color: #3dd9b8;'>💡 Server not working?</b><br>Click 'Refresh' above — IP addresses will also update on your TV.",
+        ping_hint: "<i>*To check ping, disconnect your current VPN connection first.</i>",
+        provider_protection: "Provider protection",
+        fallback_desc: "Your provider blocks direct connections, or an unsupported config format was used.",
+        variant1: "Option 1 (For .json file links):",
+        v1_desc: "Open the link in your browser, copy all the text, and paste it here.",
+        open_in_browser: "Open link in browser",
+        variant2: "Option 2 (For providers with auth):",
+        v2_desc: "Go to your VPN dashboard or app, copy the ready JSON config, and paste it here.",
+        variant3: "Option 3 (Most reliable):",
+        v3_desc: "If you have a Happ subscription that fails in ProxyTune, use <b>Happwner</b> (on Android) to convert it into standard VLESS links.",
+        more_in_tg: "Details in Telegram",
+        
+        err_no_slots: "No free slots! Unpin favorite servers or clear history.",
+        err_tv_conn: "TV connection error!",
+        tv_connected: "TV online",
+        no_tv_conn: "No TV connection",
+        unknown_server: "Unknown server",
+        empty: "Empty",
+        waiting_config: "Waiting for configuration...",
+        btn_stop: "Stopping...",
+        btn_start: "Starting...",
+        add_config_first: "Add configuration first!",
+        server_chosen: "Server selected! Click again to start.",
+        server_chosen_stop: "Server selected. VPN stopped.",
+        del_active_err: "Disconnect VPN before deleting the active server!",
+        del_confirm: "Delete this server?",
+        awg_err_incomplete: "⚠️ Error: Config is incomplete!",
+        awg_err_address: "⚠️ Error: 'Address' parameter is missing!",
+        awg_added: "AmneziaWG added! Click again to start.",
+        awg_added_stop: "AmneziaWG added. VPN stopped.",
+        insert_config: "Paste a config or link!",
+        btn_loading: "Loading...",
+        btn_processing: "Processing...",
+        err_parsing: "Error: ",
+        err_unknown: "Unknown parsing error",
+        sub_actual: "Subscription is up to date",
+        sub_updated: "Subscription successfully updated!",
+        sub_update_err: "Update error: ",
+        server_not_found: "Servers not found",
+        disconnect_first: "Disconnect VPN first!",
+        clear_confirm: "Clear history? (Favorite servers will remain)",
+        diag_wait: "Loading... Please wait about 5-10 seconds.",
+        diag_err_server: "Server error while collecting logs.",
+        diag_err_net: "Network error: ",
+        copied: "Copied!",
+        copy_err: "Failed to copy."
+    }
+};
+
+let currentLang = localStorage.getItem('proxytune_lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en');
+const t = (key) => i18nDict[currentLang][key] || key;
+
+function applyLanguage() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+            el.placeholder = t(key);
+        } else {
+            el.innerHTML = t(key);
+        }
+    });
+    document.getElementById('langToggle').innerText = currentLang === 'ru' ? 'EN' : 'RU';
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+    currentLang = currentLang === 'ru' ? 'en' : 'ru';
+    localStorage.setItem('proxytune_lang', currentLang);
+    applyLanguage();
+    fetchStatus(true); 
+});
+
+// ==================== ТЕМНАЯ / СВЕТЛАЯ ТЕМА ====================
+let currentTheme = localStorage.getItem('proxytune_theme') || 'dark';
+
+function applyTheme() {
+    const themeBtn = document.getElementById('themeToggle');
+    if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeBtn.innerText = '☀️';
+    } else {
+        document.body.classList.remove('light-theme');
+        themeBtn.innerText = '🌙';
+    }
+}
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('proxytune_theme', currentTheme);
+    applyTheme();
+});
+
+applyLanguage();
+applyTheme();
+
+// ==================== ОСНОВНОЙ КОД ====================
+const btn = document.getElementById('connectBtn');
+const statusText = document.getElementById('statusText');
+const tvStatusEl = document.getElementById('tvStatus');
+const serverListContainer = document.getElementById('serverListContainer');
+const slotCounterEl = document.getElementById('slotCounter'); 
+const vlessInput = document.getElementById('vlessInput');
+const clearInputBtn = document.getElementById('clearInputBtn');
+
+let isProcessing = false;
+let isFetchingStatus = false;
+
+vlessInput.addEventListener('input', function() {
+    if (this.value.length > 0) {
+        clearInputBtn.style.display = 'flex';
+    } else {
+        clearInputBtn.style.display = 'none';
+        this.style.height = '80px'; 
+    }
+    this.style.height = 'auto'; 
+    if (this.scrollHeight > 80) {
+        this.style.height = Math.min(this.scrollHeight, 250) + 'px'; 
+    } else {
+        this.style.height = '80px';
+    }
+});
+
+clearInputBtn.addEventListener('click', function() {
+    vlessInput.value = '';
+    clearInputBtn.style.display = 'none';
+    vlessInput.style.height = '80px';
+    vlessInput.focus(); 
+});
+
+const checkSvg = `<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+const errorSvg = `<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+const trashSvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+const copyListSvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+const pingSvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+const pingHistorySvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="#ffffff" stroke="#000000" stroke-width="2" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+const starSvg = `<svg class="icon-md star-btn" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+const dotsSvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="#ffffff"><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>`;
+const closeMenuSvg = `<svg class="icon-md" style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+let isRunning = false;
+let isTvConnected = false;
+let currentLink = '';
+let lastHistoryStr = '';
+let lastActiveLink = '';
+
+function showToast(message) {
+    const existingToast = document.getElementById('proxyToast');
+    if (existingToast) existingToast.remove();
+    const toast = document.createElement('div');
+    toast.id = 'proxyToast';
+    toast.innerHTML = message;
+    
+    toast.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--accent-color, #3dd9b8); color: #121926; padding: 16px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 10000; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; max-width: 85vw; white-space: normal; word-wrap: break-word; text-align: center; line-height: 1.4;`;
+    
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '1'; }, 10);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+function robustCopy(text) {
+    return new Promise((resolve) => {
+        if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(resolve).catch(() => fallbackCopy(text, resolve));
+        } else { fallbackCopy(text, resolve); }
+    });
+}
+function fallbackCopy(text, callback) {
+    const textArea = document.createElement("textarea"); textArea.value = text; textArea.style.position = "fixed"; textArea.style.opacity = "0";
+    document.body.appendChild(textArea); textArea.focus(); textArea.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    document.body.removeChild(textArea); callback();
+}
+
+async function postData(endpoint, data = {}) {
+    try {
+        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (!result.success && result.error === 'limit_fav') { alert(t('err_no_slots')); return; }
+        fetchStatus(true); 
+    } catch(e) { alert(t('err_tv_conn')); }
+}
+
+function formatLinkName(url) {
+    try {
+        if (!url) return t('empty');
+        url = url.trim();
+        if (url.indexOf('{') === 0) return '[JSON] Config';
+        if (url.indexOf('[Interface]') !== -1) {
+            var matchEndpoint = url.match(/Endpoint\s*=\s*([a-zA-Z0-9\.\-\:]+)/i);
+            var endpointStr = matchEndpoint ? matchEndpoint[1] : t('unknown_server');
+            var matchKey = url.match(/PublicKey\s*=\s*([A-Za-z0-9\+\/]{4})/i);
+            var shortKey = matchKey ? matchKey[1] : '???';
+            return 'AWG [' + shortKey + '] ' + endpointStr;
+        }
+        const hashIndex = url.lastIndexOf('#');
+        if (hashIndex !== -1) {
+            let name = url.substring(hashIndex + 1);
+            try { name = decodeURIComponent(name); } catch(e){}
+            if (name.length > 35) name = name.substring(0, 35) + '...';
+            return name;
+        }
+        const parts = url.split('://');
+        if (parts.length < 2) return url.substring(0, 25) + '...';
+        const protocol = parts[0].toLowerCase() + '://';
+        let rest = parts[1];
+        rest = rest.split('?')[0]; 
+        if (rest.indexOf('@') !== -1) { 
+            const authSplit = rest.split('@'); 
+            rest = authSplit[authSplit.length - 1]; 
+        }
+        rest = rest.split('/')[0]; 
+        return protocol + rest;
+    } catch(e) { 
+        return url ? url.substring(0, 25) + '...' : t('empty'); 
+    }
+}
+
+function checkPing(link, resultElement, buttonElement) {
+    if (buttonElement.style.pointerEvents === 'none') return;
+    resultElement.style.display = 'block'; resultElement.style.color = 'var(--text-muted, #94a3b8)';
+    resultElement.innerHTML = '<span style="display:inline-block; animation: spin 1s linear infinite;">↻</span>';
+    buttonElement.style.pointerEvents = 'none'; buttonElement.style.opacity = '0.5';
+    fetch('/ping-server', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: link }) })
+    .then(res => res.json())
+    .then(data => {
+        buttonElement.style.pointerEvents = 'auto'; buttonElement.style.opacity = '1';
+        if (data.success) {
+            resultElement.innerText = data.ping + ' ms';
+            if (data.ping < 150) resultElement.style.color = '#3dd9b8';
+            else if (data.ping < 300) resultElement.style.color = '#f59e0b';
+            else resultElement.style.color = '#ff6b6b';
+        } else { resultElement.innerText = 'Err'; resultElement.style.color = '#ff6b6b'; }
+    })
+    .catch(() => { buttonElement.style.pointerEvents = 'auto'; buttonElement.style.opacity = '1'; resultElement.innerText = 'Err'; resultElement.style.color = '#ff6b6b'; });
+}
+
+function toggleFavorite(linkText, starElement) {
+    starElement.style.pointerEvents = 'none';
+    fetch('/toggle-fav', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: linkText }) })
+    .then(res => res.json())
+    .then(data => {
+        starElement.style.pointerEvents = 'auto';
+        if (data.success) {
+            const svgEl = starElement.querySelector('svg');
+            if (data.fav) svgEl.classList.add('active'); else svgEl.classList.remove('active');
+            fetchStatus(true); 
+        }
+    }).catch(() => { starElement.style.pointerEvents = 'auto'; });
+}
+
+async function fetchStatus(forceRender = false) {
+    if (isFetchingStatus && !forceRender) return;
+    isFetchingStatus = true;
+
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 3000) : null;
+
+    try {
+        const res = await fetch('/status', controller
+            ? { signal: controller.signal, cache: 'no-store' }
+            : { cache: 'no-store' }
+        );
+        if (timeoutId) clearTimeout(timeoutId);
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        isTvConnected = true;
+        
+        tvStatusEl.innerHTML = `${checkSvg} <span>${t('tv_connected')}</span>`;
+        tvStatusEl.style.color = '#3dd9b8';
+        tvStatusEl.style.borderColor = 'rgba(61, 217, 184, 0.25)';
+        tvStatusEl.style.cursor = 'default';
+        
+        isRunning = data.running; currentLink = data.link || '';
+        
+        if (isRunning) { document.body.classList.add('connected'); statusText.innerText = ''; } 
+        else { document.body.classList.remove('connected'); statusText.innerText = ''; }
+
+        const currentHistoryStr = JSON.stringify(data.history || []);
+        const currentActiveLink = data.link || '';
+
+        if (forceRender || currentHistoryStr !== lastHistoryStr || currentActiveLink !== lastActiveLink) {
+            lastHistoryStr = currentHistoryStr; lastActiveLink = currentActiveLink;
+            serverListContainer.innerHTML = '';
+            
+            const history = data.history || [];
+            slotCounterEl.innerText = `${history.length}/8`;
+
+            if (history.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'server-item';
+                emptyDiv.style.display = 'flex'; emptyDiv.style.justifyContent = 'center'; emptyDiv.style.padding = '15px';
+                emptyDiv.innerHTML = `<span class="server-name" style="color: var(--text-muted, #7d8896);">${t('waiting_config')}</span>`;
+                serverListContainer.appendChild(emptyDiv);
+            } else {
+                for (let i = 0; i < history.length; i++) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'server-item';
+                    itemDiv.style.display = 'flex'; itemDiv.style.alignItems = 'center'; itemDiv.style.justifyContent = 'space-between'; itemDiv.style.position = 'relative'; itemDiv.style.overflow = 'hidden';
+
+                    const historyObj = history[i];
+                    const linkText = typeof historyObj === 'string' ? historyObj : historyObj.link;
+                    const isFav = typeof historyObj === 'object' ? historyObj.fav : false;
+                    if (linkText === data.link) itemDiv.classList.add('active'); 
+                    
+                    itemDiv.style.cursor = 'pointer';
+
+                    itemDiv.onclick = async () => {
+                        if (isProcessing) return; 
+                        
+                        if (isRunning) {
+                            if (linkText === data.link) {
+                                postData('/stop-vpn'); 
+                            } else {
+                                isProcessing = true;
+                                await fetch('/set-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: linkText }) });
+                                isProcessing = false;
+                                postData('/stop-vpn'); 
+                            }
+                        } else {
+                            if (linkText === data.link) {
+                                postData('/start-vpn'); 
+                            } else {
+                                isProcessing = true;
+                                await fetch('/set-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: linkText }) });
+                                isProcessing = false;
+                                showToast(t('server_chosen'));
+                                fetchStatus(true);
+                            }
+                        }
+                    };
+
+                    const leftWrapper = document.createElement('div');
+                    leftWrapper.style.display = 'flex'; leftWrapper.style.alignItems = 'center'; leftWrapper.style.gap = '12px'; leftWrapper.style.flex = '1'; leftWrapper.style.overflow = 'hidden';
+
+                    const favBtn = document.createElement('span');
+                    favBtn.className = 'action-icon'; favBtn.style.display = 'flex'; favBtn.style.alignItems = 'center'; favBtn.innerHTML = starSvg;
+                    if (isFav) favBtn.querySelector('svg').classList.add('active');
+                    favBtn.onclick = (e) => { e.stopPropagation(); toggleFavorite(linkText, favBtn); };
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'server-name'; nameSpan.style.margin = '0'; nameSpan.innerText = formatLinkName(linkText);
+
+                    leftWrapper.appendChild(favBtn); leftWrapper.appendChild(nameSpan);
+
+                    const rightMenuBtn = document.createElement('div');
+                    rightMenuBtn.style.display = 'flex'; rightMenuBtn.style.alignItems = 'center';
+                    
+                    const menuBtn = document.createElement('span');
+                    menuBtn.className = 'action-icon'; menuBtn.innerHTML = dotsSvg;
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'actions-overlay';
+
+                    menuBtn.onclick = (e) => { e.stopPropagation(); overlay.classList.add('show'); };
+                    rightMenuBtn.appendChild(menuBtn);
+
+                    const pingResult = document.createElement('span');
+                    pingResult.style.fontSize = '12px'; pingResult.style.fontWeight = '600'; pingResult.style.display = 'none';
+
+                    const pingBtn = document.createElement('span');
+                    pingBtn.className = 'action-icon ping-list-btn'; pingBtn.innerHTML = pingHistorySvg; 
+                    pingBtn.onclick = (e) => { e.stopPropagation(); checkPing(linkText, pingResult, pingBtn); };
+
+                    const copyBtn = document.createElement('span');
+                    copyBtn.className = 'action-icon copy-list-btn'; copyBtn.innerHTML = copyListSvg;
+                    copyBtn.onclick = (e) => { e.stopPropagation(); robustCopy(linkText).then(() => { copyBtn.innerHTML = checkSvg; copyBtn.style.color = '#3dd9b8'; setTimeout(() => { copyBtn.innerHTML = copyListSvg; copyBtn.style.color = ''; }, 1500); }); };
+
+                    const delBtn = document.createElement('span');
+                    delBtn.className = 'action-icon delete-list-btn'; delBtn.innerHTML = trashSvg;
+                    delBtn.onclick = (e) => { 
+                        e.stopPropagation(); 
+                        if (isRunning && linkText === data.link) { alert(t('del_active_err')); return; } 
+                        if(confirm(t('del_confirm'))) { postData('/delete-link', { link: linkText }); } 
+                    };
+
+                    const closeBtn = document.createElement('span');
+                    closeBtn.className = 'action-icon'; closeBtn.innerHTML = closeMenuSvg; closeBtn.style.marginLeft = '5px';
+                    closeBtn.onclick = (e) => { e.stopPropagation(); overlay.classList.remove('show'); };
+
+                    overlay.appendChild(pingResult); overlay.appendChild(pingBtn); overlay.appendChild(copyBtn); overlay.appendChild(delBtn); overlay.appendChild(closeBtn);
+
+                    itemDiv.appendChild(leftWrapper); itemDiv.appendChild(rightMenuBtn); itemDiv.appendChild(overlay); 
+                    
+                    serverListContainer.appendChild(itemDiv);
+                }
+            }
+        }
+    } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        isTvConnected = false; tvStatusEl.innerHTML = `${errorSvg} <span>${t('no_tv_conn')}</span>`; tvStatusEl.style.color = '#ff6b6b'; tvStatusEl.style.borderColor = 'rgba(255, 107, 107, 0.2)'; tvStatusEl.style.cursor = 'default';
+    } finally {
+        isFetchingStatus = false;
+    }
+}
+
+btn.onclick = () => {
+    if (isProcessing) return;
+    if (!isTvConnected) { alert(t('err_tv_conn')); return; }
+    if (!currentLink && !isRunning) { alert(t('add_config_first')); return; }
+    statusText.innerText = isRunning ? t('btn_stop') : t('btn_start');
+    postData(isRunning ? '/stop-vpn' : '/start-vpn');
+};
+
+document.getElementById('sendBtn').onclick = () => {
+    if (isProcessing) return;
+    
+    const val = document.getElementById('vlessInput').value.trim();
+    if (!val) { alert(t('insert_config')); return; }
+
+    if (val.includes('[Interface]') && val.includes('[Peer]')) {
+        if (!val.match(/Endpoint\s*=\s*[a-zA-Z0-9\.\-\:]+:\d+/i)) { alert(t('awg_err_incomplete')); return; }
+        if (!val.match(/Address\s*=\s*[a-zA-Z0-9\.\-\:]+/i)) { alert(t('awg_err_address')); return; }
+
+        if (isRunning) {
+            isProcessing = true;
+            fetch('/send-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: val }) })
+            .then(() => {
+                isProcessing = false;
+                showToast(t('awg_added_stop'));
+                postData('/stop-vpn');
+            });
+        } else {
+            postData('/send-link', { link: val });
+            showToast(t('awg_added'));
+        }
+        document.getElementById('vlessInput').value = '';
+        clearInputBtn.style.display = 'none'; vlessInput.style.height = '80px';
+        return;
+    }
+
+    const lines = val.split('\n');
+    const validLinks = [];
+    
+    lines.forEach(line => {
+        const cleanLine = line.trim();
+        if (cleanLine.startsWith('vless://') || cleanLine.startsWith('trojan://') || cleanLine.startsWith('ss://') || cleanLine.startsWith('socks5://')) {
+            let serverName = t('unknown_server');
+            const hashIndex = cleanLine.indexOf('#');
+            if (hashIndex !== -1) {
+                try { serverName = decodeURIComponent(cleanLine.substring(hashIndex + 1)); } catch (e) { serverName = cleanLine.substring(hashIndex + 1); }
+            } else { serverName = formatLinkName(cleanLine); }
+            validLinks.push({ name: serverName, link: cleanLine });
+        }
+    });
+
+    if (validLinks.length > 0) {
+        if (validLinks.length === 1) {
+            if (isRunning) {
+                isProcessing = true;
+                fetch('/send-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: validLinks[0].link }) })
+                .then(() => {
+                    isProcessing = false;
+                    showToast(t('server_chosen_stop'));
+                    postData('/stop-vpn');
+                });
+            } else {
+                postData('/send-link', { link: validLinks[0].link });
+                showToast(t('server_chosen'));
+            }
+            document.getElementById('vlessInput').value = '';
+        } else {
+            showServersModal(validLinks);
+            document.getElementById('vlessInput').value = '';
+        }
+        clearInputBtn.style.display = 'none'; vlessInput.style.height = '80px';
+        return;
+    }
+
+    const isUrl = val.startsWith('http://') || val.startsWith('https://');
+    const payload = isUrl ? { url: val } : { text: val };
+
+    const btnSend = document.getElementById('sendBtn');
+    const originalHTML = btnSend.innerHTML;
+    
+    btnSend.innerHTML = `<svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> <span>${isUrl ? t('btn_loading') : t('btn_processing')}</span>`;
+    btnSend.disabled = true;
+
+    fetch('/parse-sub', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    .then(res => res.json())
+    .then(data => {
+        btnSend.innerHTML = originalHTML; btnSend.disabled = false;
+        if (data.success && data.links && data.links.length > 0) {
+            if (isUrl) localStorage.setItem('proxytune_last_sub_url', val);
+            showServersModal(data.links); 
+            document.getElementById('vlessInput').value = ''; clearInputBtn.style.display = 'none'; vlessInput.style.height = '80px';
+        } else {
+            let errorMsg = data.error || '';
+            if (errorMsg.includes('403') || errorMsg.includes('Сбой сети') || errorMsg.includes('Блокировка HTML') || errorMsg.includes('Серверы не найдены')) {
+                document.getElementById('smartFallbackLink').href = val; 
+                document.getElementById('smartFallbackModal').style.display = 'flex';
+            } else { alert(t('err_parsing') + (errorMsg || t('err_unknown'))); }
+        }
+    }).catch(err => {
+        btnSend.innerHTML = originalHTML; btnSend.disabled = false;
+        alert(t('err_parsing'));
+    });
+};
+
+function showServersModal(links, autoOpen = true) {
+    localStorage.setItem('proxytune_sub_links', JSON.stringify(links));
+    document.getElementById('subServerCount').innerText = links.length;
+
+    const savedUrl = localStorage.getItem('proxytune_last_sub_url');
+    const refreshBtn = document.getElementById('refreshSubBtn');
+    refreshBtn.style.display = savedUrl ? 'flex' : 'none';
+
+    const list = document.getElementById('serverList'); list.innerHTML = '';
+    
+    links.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'server-item-modal'; li.style.display = 'flex'; li.style.justifyContent = 'space-between'; li.style.alignItems = 'center';
+        
+        const nameBlock = document.createElement('div');
+        nameBlock.className = 'server-name-modal'; nameBlock.innerText = item.name; nameBlock.style.flex = '1'; nameBlock.style.overflow = 'hidden'; nameBlock.style.textOverflow = 'ellipsis'; nameBlock.style.whiteSpace = 'nowrap';
+        
+        nameBlock.onclick = async () => {
+            if (isProcessing) return;
+            
+            if (isRunning) {
+                isProcessing = true;
+                await fetch('/send-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: item.link }) });
+                isProcessing = false;
+                showToast(t('server_chosen_stop'));
+                postData('/stop-vpn');
+            } else {
+                isProcessing = true;
+                await fetch('/send-link', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ link: item.link }) });
+                isProcessing = false;
+                showToast(t('server_chosen'));
+                fetchStatus(true);
+            }
+        };
+
+        const pingWrapper = document.createElement('div');
+        pingWrapper.style.display = 'flex'; pingWrapper.style.alignItems = 'center'; pingWrapper.style.gap = '8px'; pingWrapper.style.marginLeft = '10px';
+        
+        const pingResult = document.createElement('span');
+        pingResult.style.fontSize = '12px'; pingResult.style.fontWeight = '600'; pingResult.style.display = 'none';
+
+        const pingBtn = document.createElement('div');
+        pingBtn.innerHTML = pingSvg; pingBtn.style.cursor = 'pointer'; pingBtn.style.color = 'var(--text-muted, #7d8896)'; pingBtn.style.display = 'flex'; pingBtn.style.alignItems = 'center';
+        pingBtn.onclick = (e) => { e.stopPropagation(); checkPing(item.link, pingResult, pingBtn); };
+
+        pingWrapper.appendChild(pingResult); pingWrapper.appendChild(pingBtn);
+        li.appendChild(nameBlock); li.appendChild(pingWrapper); list.appendChild(li);
+    });
+    
+    document.getElementById('reopenSubBtn').style.display = 'flex';
+    if (autoOpen) document.getElementById('subModal').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('subModal').style.display = 'none'; }
+document.getElementById('closeModalBtn').onclick = closeModal;
+document.getElementById('subModal').onclick = (e) => { if (e.target.id === 'subModal' || e.target.id === 'smartFallbackModal') e.target.style.display = 'none'; };
+document.getElementById('reopenSubBtn').onclick = () => { document.getElementById('subModal').style.display = 'flex'; };
+
+document.getElementById('clearBtn').onclick = () => {
+    if (isProcessing) return;
+    if (isRunning) { alert(t('disconnect_first')); return; }
+    if(confirm(t('clear_confirm'))) { postData('/clear-history'); }
+};
+
+document.getElementById('refreshSubBtn').onclick = () => {
+    const savedUrl = localStorage.getItem('proxytune_last_sub_url');
+    if (!savedUrl) return;
+
+    const btn = document.getElementById('refreshSubBtn');
+    const icon = btn.querySelector('svg');
+    icon.classList.add('spin-anim'); btn.classList.add('disabled');
+
+    fetch('/parse-sub', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: savedUrl }) })
+    .then(res => res.json())
+    .then(data => {
+        icon.classList.remove('spin-anim'); btn.classList.remove('disabled');
+        if (data.success && data.links && data.links.length > 0) {
+            const oldLinksStr = localStorage.getItem('proxytune_sub_links') || '[]';
+            const newLinksStr = JSON.stringify(data.links);
+            if (oldLinksStr === newLinksStr) { showToast(t('sub_actual')); } 
+            else { showServersModal(data.links, true); showToast(t('sub_updated')); }
+        } else { alert(t('sub_update_err') + (data.error || t('server_not_found'))); }
+    })
+    .catch(err => { icon.classList.remove('spin-anim'); btn.classList.remove('disabled'); alert(t('err_parsing')); });
+};
+
+function startDiagnostics() {
+    var container = document.getElementById('diagResultContainer');
+    var logBox = document.getElementById('diagLogText');
+    var startBtn = document.getElementById('diagStartBtn');
+    
+    container.style.display = 'block'; logBox.value = t('diag_wait');
+    startBtn.style.opacity = '0.5'; startBtn.style.pointerEvents = 'none';
+
+    fetch('/run-diagnostics')
+    .then(res => res.json())
+    .then(data => {
+        startBtn.style.opacity = '1'; startBtn.style.pointerEvents = 'auto';
+        if (data.success) { logBox.value = data.log; } else { logBox.value = t('diag_err_server'); }
+    })
+    .catch(err => { startBtn.style.opacity = '1'; startBtn.style.pointerEvents = 'auto'; logBox.value = t('diag_err_net') + err; });
+}
+
+function copyDiagnostics() {
+    var logBox = document.getElementById('diagLogText');
+    var btn = document.getElementById('diagCopyBtn');
+    logBox.select(); logBox.setSelectionRange(0, 99999);
+    try {
+        document.execCommand('copy');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="copied">${t('copied')}</span>`;
+        btn.style.background = '#2e7d32';
+        setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = 'var(--bg-card-element, #09131b)'; }, 2500);
+    } catch (err) { alert(t('copy_err')); }
+}
+
+try {
+    const savedLinks = localStorage.getItem('proxytune_sub_links');
+    if (savedLinks) {
+        const parsedLinks = JSON.parse(savedLinks);
+        if (Array.isArray(parsedLinks) && parsedLinks.length > 0) showServersModal(parsedLinks, false);
+    }
+} catch(e) {}
+
+// ==================== ПОСЛЕДОВАТЕЛЬНЫЙ ОПРОС ТВ И ДИНАМИЧЕСКИЕ ССЫЛКИ ====================
+let pollTimer = null;
+async function pollStatus(forceRender = false) {
+    clearTimeout(pollTimer);
+    await fetchStatus(forceRender);
+    pollTimer = setTimeout(() => pollStatus(false), 1000);
+}
+pollStatus(true);
+
+var CONFIG_URLS = [
+    'https://raw.githubusercontent.com/sobolevcode/support-promo/refs/heads/main/config.json',
+    'https://gitverse.ru/api/repos/SobolevCode/support-promo/raw/branch/master/config.json'
+];
+
+function tryFetchConfig(index) {
+    if (index >= CONFIG_URLS.length) return;
+
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function() { controller.abort(); }, 3000) : null;
+
+    fetch(CONFIG_URLS[index], controller ? { signal: controller.signal } : {})
+        .then(function(res) {
+            if (timer) clearTimeout(timer);
+            if (!res.ok) throw new Error('Ошибка ' + res.status);
+            return res.json();
+        })
+        .then(function(data) {
+            var donateBtn = document.getElementById('dynamicActionBtn');
+            var donateMainText = document.getElementById('btnMainText');
+            var donateSubText = document.getElementById('btnSubText');
+
+            if (donateBtn && data.donate_url) {
+                donateBtn.href = data.donate_url;
+                if (data.btn_text && donateMainText) donateMainText.innerHTML = data.btn_text;
+                if (data.donate_subtext && donateSubText) donateSubText.innerHTML = data.donate_subtext;
+            }
+
+            var promoBtn = document.getElementById('promoActionBtn');
+            var promoMainText = document.getElementById('promoMainText');
+            var promoSubText = document.getElementById('promoSubText');
+
+            if (promoBtn && data.promo_url && data.promo_url.trim() !== "") {
+                promoBtn.href = data.promo_url;
+                if (data.promo_text && promoMainText) promoMainText.innerHTML = data.promo_text;
+                if (data.promo_subtext && promoSubText) promoSubText.innerHTML = data.promo_subtext;
+                promoBtn.style.display = 'flex';
+            }
+        })
+        .catch(function() {
+            if (timer) clearTimeout(timer);
+            tryFetchConfig(index + 1);
+        });
+}
+
+tryFetchConfig(0);
+
+// ==================== ИМПОРТ ФАЙЛОВ КОНФИГУРАЦИИ ====================
+const fileUploader = document.getElementById('fileUploader');
+const importFileBtn = document.getElementById('importFileBtn');
+
+if (importFileBtn && fileUploader) {
+    importFileBtn.addEventListener('click', () => {
+        fileUploader.click(); 
+    });
+
+    fileUploader.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            vlessInput.value = evt.target.result; 
+            vlessInput.dispatchEvent(new Event('input')); 
+            document.getElementById('sendBtn').click(); 
+        };
+        reader.readAsText(file);
+        
+        this.value = ''; 
+    });
+}
+</script>
+
+</body>
+</html>

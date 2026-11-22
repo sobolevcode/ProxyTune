@@ -1,0 +1,8 @@
+{
+  "name": "com.proxytune.service",
+  "version": "2.4.0",
+  "main": "proxy_service.js",
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}
